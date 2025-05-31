@@ -1,0 +1,13 @@
+{
+  "lockfileVersion": 1,
+  "workspaces": {
+    "": {
+      "dependencies": {
+        "home-assistant-js-websocket": "^9.5.0",
+      },
+    },
+  },
+  "packages": {
+    "home-assistant-js-websocket": ["home-assistant-js-websocket@9.5.0", "", {}, "sha512-gCBX0ulIPW3o5EhYxyNKgztBwNIs7u4hypZ+rcWir65wjLKL3b5uDx1jzU7RceyuANxvVKwBVLNujBeFohjnUw=="],
+  }
+}
