@@ -2,39 +2,58 @@
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
+import { MdClose, MdDragIndicator } from "react-icons/md";
 
 interface CustomCardProps {
+  id: string;
   title: string;
   value: string;
   subtitle: string;
   valueColor?: string;
-  colSpan?: string;
   isExpanded?: boolean;
   onExpand?: () => void;
   onClose?: () => void;
+  onRemove?: () => void;
+  isEditMode?: boolean;
 }
 
 export default function CustomCard({ 
+  id,
   title, 
   value, 
   subtitle, 
   valueColor = "text-slate-700",
-  colSpan = "col-span-1",
   isExpanded = false,
   onExpand,
-  onClose
+  onClose,
+  onRemove,
+  isEditMode = false
 }: CustomCardProps) {
   return (
     <>
       <motion.div
-        className={`${colSpan} ${isExpanded ? 'opacity-0 pointer-events-none' : ''}`}
-        layoutId={`card-${title}`}
-        onClick={onExpand}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
+        className="h-full"
+        style={{ opacity: isExpanded ? 0 : 1 }}
+        layoutId={`card-${id}`}
+        onClick={!isEditMode ? onExpand : undefined}
+        whileHover={!isEditMode ? { scale: 1.02 } : undefined}
+        whileTap={!isEditMode ? { scale: 0.98 } : undefined}
       >
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-          <CardHeader>
+        <Card className={`h-full ${!isEditMode ? 'hover:shadow-lg cursor-pointer' : ''} transition-shadow relative`}>
+          {isEditMode && (
+            <>
+              <div className="absolute top-2 left-2 z-10">
+                <MdDragIndicator className="text-slate-400 text-lg cursor-move" />
+              </div>
+              <button
+                onClick={onRemove}
+                className="absolute top-2 right-2 z-10 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 transition-colors"
+              >
+                <MdClose className="text-sm" />
+              </button>
+            </>
+          )}
+          <CardHeader className={isEditMode ? "pt-8" : ""}>
             <div className="text-2xl font-semibold text-black">
               {title}
             </div>
@@ -71,16 +90,18 @@ export default function CustomCard({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/60 z-40"
+              className="fixed inset-0 bg-black/60 z-[9999]"
               onClick={onClose}
             />
             <motion.div
-              className="fixed inset-0 z-50 flex items-center justify-center p-8 pointer-events-none"
+              className="fixed inset-0 z-[10000] flex items-center justify-center p-4 pointer-events-none"
             >
               <motion.div
-                layoutId={`card-${title}`}
-                className="w-full max-w-2xl pointer-events-auto"
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.8, opacity: 0 }}
                 transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                className="w-full max-w-2xl max-h-[90vh] overflow-auto pointer-events-auto mx-auto"
               >
                 <Card className="shadow-2xl bg-white">
                   <CardHeader className="pb-4">
@@ -97,10 +118,7 @@ export default function CustomCard({
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <motion.div 
-                      layoutId={`value-${title}`}
-                      className={`text-4xl font-bold ${valueColor} mb-4`}
-                    >
+                    <div className={`text-4xl font-bold ${valueColor} mb-4`}>
                       {value.includes('\n') ? (
                         <div className="space-y-2">
                           {value.split('\n').map((line, index) => (
@@ -110,24 +128,16 @@ export default function CustomCard({
                       ) : (
                         value
                       )}
-                    </motion.div>
-                    <motion.p 
-                      layoutId={`subtitle-${title}`}
-                      className="text-lg text-slate-600 mb-6"
-                    >
+                    </div>
+                    <p className="text-lg text-slate-600 mb-6">
                       {subtitle}
-                    </motion.p>
-                    <motion.div 
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.2 }}
-                      className="bg-slate-50 p-4 rounded-lg"
-                    >
+                    </p>
+                    <div className="bg-slate-50 p-4 rounded-lg">
                       <p className="text-slate-700">
                         Detailed information and controls for {title.toLowerCase()} would appear here.
                         This expanded view provides more space for additional data, charts, and interactive elements.
                       </p>
-                    </motion.div>
+                    </div>
                   </CardContent>
                 </Card>
               </motion.div>
