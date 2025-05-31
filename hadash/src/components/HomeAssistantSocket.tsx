@@ -1,12 +1,14 @@
 // components/HomeAssistantSocket.tsx
+"use client";
+
 import { useEffect, useRef } from "react";
 
-const HomeAssistantSocket = () => {
+export const HomeAssistantSocket = () => {
   const ws = useRef<WebSocket | null>(null);
 
   useEffect(() => {
     const connect = () => {
-      ws.current = new WebSocket("http://spoofstack.local:8123/api/websocket");
+      ws.current = new WebSocket("ws://spoofstack.local:8123/api/websocket");
 
       ws.current.onopen = () => {
         console.log("WebSocket connected");
@@ -15,7 +17,7 @@ const HomeAssistantSocket = () => {
         ws.current?.send(
           JSON.stringify({
             type: "auth",
-            access_token: "YOUR_LONG_LIVED_TOKEN", // Replace this securely
+            access_token: process.env.HA_LL_TOKEN,
           })
         );
       };
@@ -62,5 +64,3 @@ const HomeAssistantSocket = () => {
 
   return null; // Or return a UI component that uses this data
 };
-
-export default HomeAssistantSocket;
